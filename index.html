@@ -1,0 +1,1118 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>Namma Kadai - Billing</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;0,600;0,700;1,600&family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --teal:#3F3D8F; --teal-dark:#292866; --mustard:#0E9F6E; --mustard-dark:#0B7A55;
+    --cream:#F6F4EF; --ink:#20232E; --green:#0E9F6E; --red:#DC2626; --white:#fff;
+    --card:#FFFFFF; --shadow:0 6px 20px rgba(32,35,46,0.08);
+    --gold:#B08D57; --gold-soft:#EFE6D3;
+    --gold-line: linear-gradient(90deg, transparent, var(--gold), transparent);
+    --font-display:'Cormorant Garamond', Georgia, serif;
+    --font-body:'Poppins', system-ui, -apple-system, Arial, sans-serif;
+  }
+  *{box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
+  html,body{margin:0;padding:0;height:100%;background:var(--cream);color:var(--ink);
+    font-family:var(--font-body);}
+  body{
+    background:var(--cream);
+  }
+  button{font-family:inherit;cursor:pointer;}
+  #app{max-width:520px;margin:0 auto;min-height:100vh;background:var(--cream);
+    display:flex;flex-direction:column;padding-bottom:78px;position:relative;
+    box-shadow:0 0 40px rgba(30,41,59,0.08);}
+
+  /* Header */
+  header{background:linear-gradient(135deg,var(--teal),var(--teal-dark));color:var(--white);padding:20px 18px 16px;
+    display:flex;align-items:center;justify-content:space-between;box-shadow:var(--shadow);
+    position:sticky;top:0;z-index:20;border-bottom:2px solid var(--gold);}
+  header .logo{display:flex;align-items:center;gap:13px;}
+  header .logo span.emoji{font-size:26px;filter:drop-shadow(0 1px 2px rgba(0,0,0,.3));}
+  .shopLogoWrap{width:44px;height:44px;border-radius:12px;background:rgba(255,255,255,.12);
+    display:flex;align-items:center;justify-content:center;overflow:hidden;flex-shrink:0;
+    border:1.5px solid rgba(255,255,255,.25);}
+  .shopLogoWrap img{width:100%;height:100%;object-fit:cover;}
+  .titleEditWrap{display:flex;align-items:center;gap:6px;}
+  header h1{font-family:var(--font-display);font-size:25px;margin:0;font-weight:700;letter-spacing:.2px;color:#fff;
+    outline:none;}
+  header h1[contenteditable=true]{border-bottom:1.5px dashed var(--gold-soft);padding-bottom:1px;}
+  .editIconBtn{background:rgba(255,255,255,.14);border:none;color:#fff;font-size:12px;width:24px;height:24px;
+    border-radius:7px;line-height:1;flex-shrink:0;}
+  header .sub{font-size:10px;opacity:.85;margin-top:3px;font-weight:500;letter-spacing:1.6px;text-transform:uppercase;color:#D9D6F5;}
+
+  /* Auth gate */
+  .authGate{position:fixed;inset:0;max-width:520px;margin:0 auto;background:var(--cream);
+    z-index:100;display:flex;align-items:center;justify-content:center;padding:22px;overflow-y:auto;}
+  .authCard{background:var(--card);border-radius:20px;box-shadow:var(--shadow);padding:30px 26px;
+    width:100%;border:1px solid #EEE9DD;}
+  .authLogo{font-size:38px;text-align:center;}
+  .authTitle{font-family:var(--font-display);font-size:30px;font-weight:700;text-align:center;margin:4px 0 2px;color:var(--ink);}
+  .authSub{text-align:center;font-size:12.5px;color:#7A8194;margin:0 0 18px;}
+  .authTabs{display:flex;gap:6px;background:#F1EFE8;border-radius:12px;padding:4px;margin-bottom:16px;}
+  .authTabBtn{flex:1;background:none;border:none;padding:9px 0;border-radius:9px;font-weight:600;font-size:13.5px;color:#7A8194;}
+  .authTabBtn.active{background:var(--card);color:var(--teal);box-shadow:0 1px 4px rgba(0,0,0,.08);}
+  .authDivider{display:flex;align-items:center;gap:10px;margin:18px 0 12px;color:#B4B9C6;font-size:11.5px;text-transform:uppercase;letter-spacing:1px;}
+  .authDivider::before,.authDivider::after{content:'';flex:1;height:1px;background:#E7E3D8;}
+  .checkRow{display:flex;align-items:flex-start;gap:8px;font-size:12.5px;font-weight:500;text-transform:none;
+    letter-spacing:normal;color:#5B6272;margin-top:14px;line-height:1.4;}
+  .checkRow input{margin-top:2px;}
+  .checkRow a{color:var(--teal);font-weight:600;}
+  .cloudBadge{text-align:center;font-size:11.5px;color:#8A8FA0;margin-top:16px;font-weight:500;}
+  .termsBody{font-size:13px;line-height:1.65;color:#3D4252;max-height:52vh;overflow-y:auto;}
+  .termsBody li{margin-bottom:9px;}
+  .acctBadge{display:inline-block;font-size:11px;font-weight:700;padding:3px 10px;border-radius:20px;
+    background:var(--gold-soft);color:#7A5F2D;letter-spacing:.3px;}
+
+  /* Screens */
+  .screen{display:none;padding:16px 14px;flex:1;}
+  .screen.active{display:block;}
+
+  /* Item grid */
+  .grid{display:grid;grid-template-columns:repeat(3,1fr);gap:11px;margin-top:12px;}
+  .item-card{background:var(--card);border-radius:16px;box-shadow:var(--shadow);
+    overflow:hidden;text-align:center;border:1px solid #ECE8DC;padding-bottom:8px;
+    position:relative;transition:transform .12s ease, box-shadow .12s ease;}
+  .item-card:active{border-color:var(--teal);transform:scale(.97);}
+  .item-card img{width:100%;height:72px;object-fit:cover;background:#EEF1F8;}
+  .item-card .ph{width:100%;height:72px;display:flex;align-items:center;justify-content:center;
+    background:#EEF1F8;font-size:26px;}
+  .item-card .nm{font-family:var(--font-body);font-size:12px;font-weight:600;padding:6px 5px 0;line-height:1.25;
+    min-height:30px;display:flex;align-items:center;justify-content:center;}
+  .item-card .pr{font-family:var(--font-display);font-size:16px;font-weight:700;color:var(--teal);}
+  .empty-note{text-align:center;color:#8a93a8;padding:40px 14px;font-size:15px;
+    font-family:var(--font-display);}
+
+  /* Cart bar */
+  #cartBar{position:fixed;left:0;right:0;bottom:64px;max-width:520px;margin:0 auto;
+    background:linear-gradient(135deg,var(--mustard),var(--mustard-dark));box-shadow:0 -3px 12px rgba(30,41,59,0.15);
+    display:none;align-items:center;justify-content:space-between;padding:11px 18px;
+    z-index:25;border-radius:14px 14px 0 0;}
+  #cartBar.show{display:flex;}
+  #cartBar .info{font-family:var(--font-display);font-weight:700;color:#fff;font-size:17px;}
+  #cartBar button{background:var(--teal);color:#fff;border:none;padding:10px 18px;
+    border-radius:10px;font-weight:600;font-size:14px;letter-spacing:.3px;}
+
+  /* Bottom nav */
+  nav.tabs{position:fixed;bottom:0;left:0;right:0;max-width:520px;margin:0 auto;
+    background:var(--teal-dark);display:flex;z-index:30;}
+  nav.tabs button{flex:1;background:none;border:none;color:#C7D2FE;padding:10px 0 8px;
+    font-size:12px;font-weight:600;letter-spacing:.3px;}
+  nav.tabs button .ic{display:block;font-size:21px;margin-bottom:2px;}
+  nav.tabs button.active{color:#fff;}
+
+  /* Buttons */
+  .btn{display:inline-block;width:100%;text-align:center;padding:14px;border:none;
+    border-radius:13px;font-size:15.5px;font-weight:600;letter-spacing:.3px;margin-top:10px;
+    font-family:var(--font-body);transition:transform .1s ease, opacity .15s ease;}
+  .btn:active{transform:scale(.98);}
+  .btn-teal{background:linear-gradient(135deg,var(--teal),var(--teal-dark));color:#fff;border:none;}
+  .btn-mustard{background:linear-gradient(135deg,var(--mustard),var(--mustard-dark));color:#fff;}
+  .btn-green{background:var(--green);color:#fff;}
+  .btn-red{background:var(--red);color:#fff;}
+  .btn-outline{background:var(--card);color:var(--teal);border:1.5px solid var(--teal);}
+
+  h2.sec{font-family:var(--font-display);font-size:19px;color:var(--ink);margin:8px 0 12px;font-weight:700;
+    display:flex;align-items:center;gap:8px;}
+  label{font-size:12.5px;font-weight:600;color:#64748B;display:block;margin-top:12px;
+    text-transform:uppercase;letter-spacing:.6px;}
+  input[type=text],input[type=number],input[type=month],input[type=password]{
+    width:100%;padding:12px;border-radius:10px;border:1.5px solid #E2E8F0;font-size:16px;
+    margin-top:5px;background:var(--card);font-family:var(--font-body);color:var(--ink);}
+  input:focus{outline:none;border-color:var(--teal);}
+
+  /* Cards / rows */
+  .row-card{background:var(--card);border-radius:12px;box-shadow:var(--shadow);padding:10px 12px;
+    display:flex;align-items:center;gap:10px;margin-bottom:10px;border:1px solid #EEF1F8;}
+  .row-card img,.row-card .ph2{width:44px;height:44px;border-radius:8px;object-fit:cover;
+    background:#EEF1F8;display:flex;align-items:center;justify-content:center;font-size:19px;flex-shrink:0;}
+  .row-card .meta{flex:1;min-width:0;}
+  .row-card .meta .n{font-weight:600;font-size:14px;}
+  .row-card .meta .p{color:var(--teal);font-weight:700;font-size:13.5px;font-family:var(--font-display);}
+  .iconbtn{background:none;border:none;font-size:18px;padding:6px;}
+
+  /* Modal */
+  .modal-bg{position:fixed;inset:0;background:rgba(15,23,42,.55);display:none;
+    align-items:center;justify-content:center;z-index:50;padding:16px;}
+  .modal-bg.show{display:flex;}
+  .modal{background:var(--card);border-radius:20px;padding:24px;max-width:400px;width:100%;
+    max-height:88vh;overflow-y:auto;
+    box-shadow:0 14px 44px rgba(15,23,42,.25);}
+  .modal h3{font-family:var(--font-display);font-size:20px;margin-top:0;color:var(--ink);
+    padding-bottom:10px;border-bottom:1px solid #EEF1F8;}
+
+  .qty-ctl{display:flex;align-items:center;gap:8px;}
+  .qty-ctl button{width:28px;height:28px;border-radius:8px;border:none;background:var(--teal);
+    color:#fff;font-size:17px;font-weight:700;}
+  .qty-ctl span{min-width:20px;text-align:center;font-weight:700;}
+
+  /* PIN keypad */
+  .pinDisplay{text-align:center;font-size:30px;letter-spacing:10px;margin:16px 0;
+    color:var(--ink);font-weight:800;min-height:38px;font-family:var(--font-display);}
+  .keypad{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;}
+  .keypad button{padding:16px 0;font-size:19px;font-weight:600;border:1px solid #E2E8F0;
+    border-radius:12px;background:var(--card);color:var(--ink);}
+  .keypad button.wide{background:var(--teal);color:#fff;border-color:var(--teal);}
+
+  .totals-box{background:var(--card);border-radius:12px;box-shadow:var(--shadow);padding:15px;margin:10px 0;
+    border:1px solid #EEF1F8;}
+  .totals-box .tline{display:flex;justify-content:space-between;padding:5px 0;font-size:14.5px;}
+  .totals-box .tline.grand{font-weight:700;font-size:19px;color:var(--ink);font-family:var(--font-display);
+    border-top:1px solid #EEF1F8;margin-top:6px;padding-top:11px;}
+
+  .paytabs{display:flex;gap:10px;margin-top:14px;}
+  .paytabs button{flex:1;padding:14px 0;border-radius:12px;border:1.5px solid #E2E8F0;
+    background:var(--card);font-weight:600;font-size:14.5px;}
+  .paytabs button.sel{border-color:var(--teal);background:#EEF0FE;color:var(--teal);}
+
+  #qrBox{text-align:center;margin-top:14px;display:none;}
+  #qrBox.show{display:block;}
+  #qrBox img{width:200px;height:200px;border:6px solid var(--card);box-shadow:var(--shadow);border-radius:12px;
+    outline:1px solid #EEF1F8;}
+  #qrBox .amt{font-family:var(--font-display);font-size:25px;font-weight:800;color:var(--ink);margin-top:8px;}
+  #qrBox .upiid{font-size:13px;color:#64748B;word-break:break-all;}
+  #qrBox .qrWarn{margin-top:10px;background:#FEF3C7;color:#92400E;border:1px solid #FDE68A;
+    border-radius:10px;padding:9px 12px;font-size:12px;font-weight:500;line-height:1.4;text-align:left;}
+
+  .toast{position:fixed;left:50%;bottom:90px;transform:translateX(-50%);background:var(--ink);
+    color:#fff;padding:12px 22px;border-radius:10px;font-weight:600;z-index:80;display:none;
+    box-shadow:0 4px 14px rgba(0,0,0,.25);font-size:14px;}
+  .helptext{font-size:12px;color:#94A3B8;margin-top:4px;}
+  .file-btn{display:block;width:100%;text-align:center;padding:14px;border-radius:10px;
+    border:1.5px dashed var(--teal);color:var(--teal);font-weight:600;margin-top:10px;background:var(--card);}
+  .photo-preview{width:88px;height:88px;border-radius:10px;object-fit:cover;margin:10px auto 0;display:block;
+    border:2px solid #EEF1F8;}
+  .settings-tabs{display:flex;gap:6px;margin-bottom:14px;flex-wrap:wrap;}
+  .settings-tabs button{flex:1;min-width:70px;padding:9px 4px;border-radius:10px;border:1px solid #E2E8F0;
+    background:var(--card);color:var(--ink);font-weight:600;font-size:12px;}
+  .settings-tabs button.active{background:var(--teal);color:#fff;border-color:var(--teal);}
+  .lockscreen{text-align:center;padding:40px 10px;}
+  .lockscreen .ic{font-size:46px;}
+</style>
+</head>
+<body>
+
+<!-- AUTH GATE -->
+<div class="authGate" id="authGate">
+  <div class="authCard">
+    <div class="authLogo">🛍️</div>
+    <div class="authTitle">Namma Kadai</div>
+    <p class="authSub">Sign in with email to sync your shop, or continue on this device only</p>
+
+    <div class="authTabs">
+      <button class="authTabBtn active" data-tab="login">Log In</button>
+      <button class="authTabBtn" data-tab="signup">Sign Up</button>
+    </div>
+
+    <div id="authTab-login">
+      <label>Email</label>
+      <input type="text" id="loginEmail" placeholder="you@example.com" autocomplete="email">
+      <label>Password</label>
+      <input type="password" id="loginPassword" placeholder="Your password" autocomplete="current-password">
+      <button class="btn btn-teal" id="loginBtn">Log In</button>
+    </div>
+
+    <div id="authTab-signup" style="display:none;">
+      <label>Email</label>
+      <input type="text" id="signupEmail" placeholder="you@example.com" autocomplete="email">
+      <label>Password</label>
+      <input type="password" id="signupPassword" placeholder="Create a password (6+ characters)" autocomplete="new-password">
+      <label class="checkRow"><input type="checkbox" id="agreeTerms"> I agree to the <a href="#" id="openTermsLink">Terms &amp; Conditions</a></label>
+      <button class="btn btn-teal" id="signupBtn">Create Account</button>
+    </div>
+
+    <div class="authDivider"><span>or</span></div>
+    <button class="btn btn-outline" id="guestBtn">Continue without an account</button>
+    <div class="cloudBadge" id="cloudBadge"></div>
+  </div>
+</div>
+
+<div id="app">
+
+  <header>
+    <div class="logo">
+      <div class="shopLogoWrap" id="shopLogoWrap">
+        <img id="shopLogoImg" style="display:none;">
+        <span class="emoji" id="shopEmoji">🛍️</span>
+      </div>
+      <div>
+        <div class="titleEditWrap">
+          <h1 id="shopTitle">My Shop</h1>
+          <button class="editIconBtn" id="editTitleBtn" title="Edit shop name">✏️</button>
+        </div>
+        <div class="sub">Namma Kadai</div>
+      </div>
+    </div>
+    <div style="font-size:22px" id="clockIcon">🧾</div>
+  </header>
+
+  <!-- HOME / BILLING SCREEN -->
+  <section class="screen active" id="home">
+    <h2 class="sec">🧾 New Bill — Tap items to add</h2>
+    <div class="grid" id="itemGrid"></div>
+    <div class="empty-note" id="emptyNote" style="display:none;">
+      No items yet.<br>Go to ⚙️ Settings → 📦 Items to add your products.
+    </div>
+  </section>
+
+  <!-- SETTINGS (PIN gated) -->
+  <section class="screen" id="settings">
+    <div id="lockPane" class="lockscreen">
+      <div class="ic">🔒</div>
+      <h2 class="sec" style="text-align:center;">Enter PIN</h2>
+      <div class="pinDisplay" id="pinDisplay"></div>
+      <div class="keypad" id="pinKeypad"></div>
+      <div class="helptext" style="text-align:center;">Default PIN is 1234 (change it after login)</div>
+    </div>
+
+    <div id="adminPane" style="display:none;">
+      <div class="settings-tabs">
+        <button data-tab="items" class="active">📦 Items</button>
+        <button data-tab="reports">📊 Reports</button>
+        <button data-tab="shop">🏪 Shop / QR</button>
+        <button data-tab="pin">🔑 PIN</button>
+        <button data-tab="account">👤 Account</button>
+      </div>
+
+      <!-- ITEMS TAB -->
+      <div class="admintab" id="tab-items">
+        <h2 class="sec">Add / Edit Item</h2>
+        <input type="hidden" id="editItemId">
+        <label>Item Name</label>
+        <input type="text" id="itName" placeholder="e.g. Tea Packet">
+        <label>Price (₹)</label>
+        <input type="number" id="itPrice" placeholder="e.g. 20">
+        <label>Photo</label>
+        <label class="file-btn">📷 Take / Choose Photo
+          <input type="file" accept="image/*" capture="environment" id="itPhoto" style="display:none;">
+        </label>
+        <img id="itPreview" class="photo-preview" style="display:none;">
+        <button class="btn btn-teal" id="saveItemBtn">✔ Save Item</button>
+        <button class="btn btn-outline" id="cancelEditBtn" style="display:none;">Cancel Edit</button>
+
+        <h2 class="sec" style="margin-top:22px;">All Items</h2>
+        <div id="itemsList"></div>
+      </div>
+
+      <!-- REPORTS TAB -->
+      <div class="admintab" id="tab-reports" style="display:none;">
+        <h2 class="sec">Monthly Report</h2>
+        <input type="month" id="reportMonth">
+        <div class="totals-box" id="reportTotals"></div>
+        <button class="btn btn-mustard" id="exportBtn">⬇ Download Excel (CSV)</button>
+        <h2 class="sec" style="margin-top:18px;">Sales — This Month</h2>
+        <div id="txList"></div>
+      </div>
+
+      <!-- SHOP / QR TAB -->
+      <div class="admintab" id="tab-shop" style="display:none;">
+        <h2 class="sec">Shop Details</h2>
+        <label>Shop Name</label>
+        <input type="text" id="cfgShopName">
+        <div class="helptext">You can also tap the ✏️ next to the shop name at the top of the app to rename it instantly.</div>
+        <label>Shop Logo / Photo</label>
+        <label class="file-btn">🖼️ Choose Shop Photo
+          <input type="file" accept="image/*" id="shopLogoInput" style="display:none;">
+        </label>
+        <img id="shopLogoPreview" class="photo-preview" style="display:none;">
+        <button class="btn btn-outline" id="removeLogoBtn" style="display:none;">Remove Photo</button>
+        <label>UPI ID (for QR code)</label>
+        <input type="text" id="cfgUpiId" placeholder="e.g. shopname@upi">
+        <label>UPI Payee Name</label>
+        <input type="text" id="cfgUpiName" placeholder="e.g. Namma Kadai">
+        <button class="btn btn-teal" id="saveShopBtn">✔ Save</button>
+        <div class="helptext">This UPI ID is used to generate the payment QR code shown to customers.</div>
+      </div>
+
+      <!-- ACCOUNT TAB -->
+      <div class="admintab" id="tab-account" style="display:none;">
+        <h2 class="sec">Your Account</h2>
+        <div class="totals-box" id="acctInfoBox"></div>
+        <button class="btn btn-outline" id="signOutBtn">🚪 Sign Out</button>
+        <button class="btn btn-outline" id="viewTermsBtn" style="margin-top:10px;">📄 Terms &amp; Conditions</button>
+        <button class="btn btn-red" id="deleteDataBtn" style="margin-top:22px;">🗑️ Delete All My Data</button>
+        <div class="helptext">Deleting removes all items, sales records and shop settings from this device (and your cloud account, if connected). This cannot be undone.</div>
+      </div>
+
+      <!-- PIN TAB -->
+      <div class="admintab" id="tab-pin" style="display:none;">
+        <h2 class="sec">Change PIN</h2>
+        <label>Current PIN</label>
+        <input type="password" id="oldPin" maxlength="6">
+        <label>New PIN</label>
+        <input type="password" id="newPin" maxlength="6">
+        <label>Confirm New PIN</label>
+        <input type="password" id="confirmPin" maxlength="6">
+        <button class="btn btn-teal" id="changePinBtn">✔ Update PIN</button>
+        <button class="btn btn-red" id="lockNowBtn" style="margin-top:26px;">🔒 Lock Settings Now</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- Cart bar -->
+  <div id="cartBar">
+    <div class="info" id="cartInfo">0 items — ₹0</div>
+    <button id="cartPayBtn">Go to Payment ▶</button>
+  </div>
+
+  <!-- Bottom nav -->
+  <nav class="tabs">
+    <button class="navbtn active" id="nav-home" data-target="home"><span class="ic">🧾</span>Bill</button>
+    <button class="navbtn" id="nav-settings" data-target="settings"><span class="ic">⚙️</span>Settings</button>
+  </nav>
+</div>
+
+<!-- CART MODAL -->
+<div class="modal-bg" id="cartModalBg">
+  <div class="modal">
+    <h3>🛒 Cart</h3>
+    <div id="cartItemsList"></div>
+    <div class="totals-box">
+      <div class="tline grand"><span>Total</span><span id="cartModalTotal">₹0</span></div>
+    </div>
+    <button class="btn btn-mustard" id="proceedPayBtn">Proceed to Payment ▶</button>
+    <button class="btn btn-outline" id="closeCartBtn">Close</button>
+  </div>
+</div>
+
+<!-- PAYMENT MODAL -->
+<div class="modal-bg" id="payModalBg">
+  <div class="modal">
+    <h3>💰 Receive Payment</h3>
+    <div class="totals-box">
+      <div class="tline grand"><span>Amount to collect</span><span id="payAmount">₹0</span></div>
+    </div>
+    <div class="paytabs">
+      <button id="payCashBtn" class="sel">💵 Cash</button>
+      <button id="payUpiBtn">📱 UPI</button>
+    </div>
+    <div id="qrBox">
+      <img id="qrImg" src="">
+      <div class="amt" id="qrAmt"></div>
+      <div class="upiid" id="qrUpiId"></div>
+      <div class="qrWarn">⚠️ Please verify the amount and payee name before paying. Scan and pay at your own risk — this app is not responsible for payments made to the wrong QR code.</div>
+    </div>
+    <button class="btn btn-green" id="confirmPayBtn">✔ Payment Received</button>
+    <button class="btn btn-outline" id="closePayBtn">Cancel</button>
+  </div>
+</div>
+
+<!-- TERMS MODAL -->
+<div class="modal-bg" id="termsModalBg">
+  <div class="modal">
+    <h3>📄 Terms &amp; Conditions</h3>
+    <div class="termsBody">
+      <ul>
+        <li><b>Your data stays yours.</b> By default, every item, sale record and shop setting is stored only in this browser, on this device. Nothing is sent to the app's developer or to any third party.</li>
+        <li><b>Cloud sync (optional).</b> If cloud sync is set up for this app and you sign in with an email account, your shop data is copied to that cloud project only, so you can access it from your other devices. The developer of this app cannot see, read, or sell that data.</li>
+        <li><b>No sharing.</b> Your bills, items and customer payment details are never shared with advertisers, other shop owners, or any outside party.</li>
+        <li><b>You're in control.</b> You can sign out, or permanently delete your account and all stored data at any time from Settings → Account.</li>
+        <li><b>Payments.</b> This app only displays a UPI QR code generated from the details you enter — it does not process or hold any money. Always double-check the amount and payee name before accepting a payment.</li>
+        <li><b>PIN &amp; password.</b> You are responsible for keeping your settings PIN and account password private.</li>
+      </ul>
+    </div>
+    <button class="btn btn-teal" id="closeTermsBtn">Close</button>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<!-- Optional cloud sync: only used if FIREBASE_CONFIG below is filled in -->
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+
+<script>
+/* ---------------- CLOUD CONFIG ----------------
+   This app works fully offline out of the box (all data in this browser's
+   local storage). To turn on real cross-device cloud sync + email login,
+   create a free Firebase project (firebase.google.com), enable
+   "Email/Password" sign-in and Firestore, and paste your web app config
+   below. Until you do, Login/Sign Up still works but only creates a
+   device-local profile — it will NOT sync across devices. */
+const FIREBASE_CONFIG = {
+  apiKey: "",
+  authDomain: "",
+  projectId: "",
+  storageBucket: "",
+  messagingSenderId: "",
+  appId: ""
+};
+const CLOUD_ENABLED = !!(FIREBASE_CONFIG.apiKey && window.firebase);
+let fbAuth = null, fbDB = null;
+if(CLOUD_ENABLED){
+  firebase.initializeApp(FIREBASE_CONFIG);
+  fbAuth = firebase.auth();
+  fbDB = firebase.firestore();
+}
+
+/* ---------------- DATA LAYER (local-first; syncs to cloud only if signed in) ---------------- */
+const DEFAULTS = { shopName:'My Shop', upiId:'', upiName:'', pin:'1234', logo:'' };
+let DB = {
+  items: JSON.parse(localStorage.getItem('nk_items') || '[]'),
+  tx: JSON.parse(localStorage.getItem('nk_tx') || '[]'),
+  settings: Object.assign({}, DEFAULTS, JSON.parse(localStorage.getItem('nk_settings') || '{}'))
+};
+function saveLocalOnly(){
+  localStorage.setItem('nk_items', JSON.stringify(DB.items));
+  localStorage.setItem('nk_tx', JSON.stringify(DB.tx));
+  localStorage.setItem('nk_settings', JSON.stringify(DB.settings));
+}
+let cloudSyncTimer = null;
+function pushToCloud(){
+  if(!CLOUD_ENABLED || !currentUser || currentUser.mode!=='cloud') return;
+  clearTimeout(cloudSyncTimer);
+  cloudSyncTimer = setTimeout(()=>{
+    fbDB.collection('shops').doc(currentUser.uid).set(
+      { items: DB.items, tx: DB.tx, settings: DB.settings }, { merge:true }
+    ).catch(err=>console.error('Cloud sync failed', err));
+  }, 800);
+}
+function save(){
+  saveLocalOnly();
+  pushToCloud();
+}
+let cart = [];
+let unlocked = false;
+let payMethod = 'cash';
+let currentUser = null; // {email, uid, mode:'cloud'|'local'|'guest'}
+
+const $ = id => document.getElementById(id);
+function toast(msg){
+  const t = $('toast'); t.textContent = msg; t.style.display='block';
+  clearTimeout(t._h); t._h = setTimeout(()=>t.style.display='none', 1800);
+}
+function money(n){ return '₹' + Number(n).toFixed(2).replace(/\.00$/,''); }
+
+/* ---------------- NAV ---------------- */
+document.querySelectorAll('.navbtn').forEach(b=>{
+  b.addEventListener('click', ()=>{
+    document.querySelectorAll('.navbtn').forEach(x=>x.classList.remove('active'));
+    document.querySelectorAll('.screen').forEach(x=>x.classList.remove('active'));
+    b.classList.add('active');
+    $(b.dataset.target).classList.add('active');
+    if(b.dataset.target === 'settings'){
+      // Security: always require the PIN when settings is opened, even if it was
+      // unlocked earlier in this session.
+      unlocked = false;
+      $('lockPane').style.display='block'; $('adminPane').style.display='none';
+      pinBuffer=''; renderPinDisplay(); resetLockoutDisplay();
+    } else {
+      // Leaving settings re-locks it immediately.
+      unlocked = false;
+    }
+  });
+});
+
+/* ---------------- HOME / ITEM GRID ---------------- */
+function renderTitle(){
+  $('shopTitle').textContent = DB.settings.shopName || 'My Shop';
+  if(DB.settings.logo){
+    $('shopLogoImg').src = DB.settings.logo;
+    $('shopLogoImg').style.display='block';
+    $('shopEmoji').style.display='none';
+  } else {
+    $('shopLogoImg').style.display='none';
+    $('shopEmoji').style.display='block';
+  }
+}
+
+/* ---------------- EDITABLE SHOP TITLE ---------------- */
+$('editTitleBtn').addEventListener('click', ()=>{
+  const h1 = $('shopTitle');
+  h1.contentEditable = 'true';
+  h1.focus();
+  document.getSelection().selectAllChildren(h1);
+});
+function commitTitleEdit(){
+  const h1 = $('shopTitle');
+  h1.contentEditable = 'false';
+  const val = h1.textContent.trim() || 'My Shop';
+  h1.textContent = val;
+  DB.settings.shopName = val;
+  save();
+  if($('cfgShopName')) $('cfgShopName').value = val;
+}
+$('shopTitle').addEventListener('blur', commitTitleEdit);
+$('shopTitle').addEventListener('keydown', e=>{
+  if(e.key==='Enter'){ e.preventDefault(); $('shopTitle').blur(); }
+});
+
+/* ---------------- SHOP LOGO UPLOAD ---------------- */
+function resizeImageFile(file, maxW, cb){
+  const reader = new FileReader();
+  reader.onload = ev=>{
+    const img = new Image();
+    img.onload = ()=>{
+      const scale = Math.min(1, maxW/img.width);
+      const w = Math.round(img.width*scale), h = Math.round(img.height*scale);
+      const canvas = document.createElement('canvas');
+      canvas.width=w; canvas.height=h;
+      canvas.getContext('2d').drawImage(img,0,0,w,h);
+      cb(canvas.toDataURL('image/jpeg',0.7));
+    };
+    img.src = ev.target.result;
+  };
+  reader.readAsDataURL(file);
+}
+function loadShopLogoPreview(){
+  if(DB.settings.logo){
+    $('shopLogoPreview').src = DB.settings.logo;
+    $('shopLogoPreview').style.display='block';
+    $('removeLogoBtn').style.display='block';
+  } else {
+    $('shopLogoPreview').style.display='none';
+    $('removeLogoBtn').style.display='none';
+  }
+}
+$('shopLogoInput').addEventListener('change', (e)=>{
+  const file = e.target.files[0];
+  if(!file) return;
+  resizeImageFile(file, 300, dataUrl=>{
+    DB.settings.logo = dataUrl;
+    save(); renderTitle(); loadShopLogoPreview();
+    toast('✔ Shop photo updated');
+  });
+});
+$('removeLogoBtn').addEventListener('click', ()=>{
+  DB.settings.logo = '';
+  save(); renderTitle(); loadShopLogoPreview();
+});
+function renderGrid(){
+  const grid = $('itemGrid');
+  grid.innerHTML = '';
+  $('emptyNote').style.display = DB.items.length ? 'none' : 'block';
+  DB.items.forEach(it=>{
+    const div = document.createElement('div');
+    div.className = 'item-card';
+    div.innerHTML = (it.photo ? `<img src="${it.photo}">` : `<div class="ph">🛒</div>`) +
+      `<div class="nm">${escapeHtml(it.name)}</div><div class="pr">${money(it.price)}</div>`;
+    div.addEventListener('click', ()=> addToCart(it.id));
+    grid.appendChild(div);
+  });
+}
+function escapeHtml(s){ return (s||'').replace(/[&<>"']/g, c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
+
+function addToCart(id){
+  const it = DB.items.find(x=>x.id===id);
+  if(!it) return;
+  let c = cart.find(x=>x.id===id);
+  if(c) c.qty++;
+  else cart.push({id:it.id, name:it.name, price:it.price, qty:1});
+  renderCartBar();
+  toast(it.name + ' added');
+}
+function cartTotal(){ return cart.reduce((s,c)=>s+c.qty*c.price,0); }
+function cartCount(){ return cart.reduce((s,c)=>s+c.qty,0); }
+function renderCartBar(){
+  const bar = $('cartBar');
+  if(cart.length===0){ bar.classList.remove('show'); return; }
+  bar.classList.add('show');
+  $('cartInfo').textContent = cartCount() + ' items — ' + money(cartTotal());
+}
+$('cartPayBtn').addEventListener('click', openCartModal);
+
+function openCartModal(){
+  const list = $('cartItemsList');
+  list.innerHTML = '';
+  cart.forEach(c=>{
+    const row = document.createElement('div');
+    row.className = 'row-card';
+    row.innerHTML = `<div class="meta"><div class="n">${escapeHtml(c.name)}</div>
+      <div class="p">${money(c.price)} each</div></div>
+      <div class="qty-ctl">
+        <button data-act="dec">−</button><span>${c.qty}</span><button data-act="inc">+</button>
+      </div>
+      <button class="iconbtn" data-act="del">🗑️</button>`;
+    row.querySelector('[data-act=inc]').onclick = ()=>{ c.qty++; openCartModal(); renderCartBar(); };
+    row.querySelector('[data-act=dec]').onclick = ()=>{ c.qty--; if(c.qty<=0) cart = cart.filter(x=>x!==c); openCartModal(); renderCartBar(); };
+    row.querySelector('[data-act=del]').onclick = ()=>{ cart = cart.filter(x=>x!==c); openCartModal(); renderCartBar(); };
+    list.appendChild(row);
+  });
+  $('cartModalTotal').textContent = money(cartTotal());
+  $('cartModalBg').classList.add('show');
+}
+$('closeCartBtn').addEventListener('click', ()=> $('cartModalBg').classList.remove('show'));
+$('proceedPayBtn').addEventListener('click', ()=>{
+  if(cart.length===0){ toast('Cart is empty'); return; }
+  $('cartModalBg').classList.remove('show');
+  openPayModal();
+});
+
+/* ---------------- PAYMENT ---------------- */
+function openPayModal(){
+  payMethod = 'cash';
+  $('payCashBtn').classList.add('sel'); $('payUpiBtn').classList.remove('sel');
+  $('qrBox').classList.remove('show');
+  $('payAmount').textContent = money(cartTotal());
+  $('payModalBg').classList.add('show');
+}
+$('closePayBtn').addEventListener('click', ()=> $('payModalBg').classList.remove('show'));
+$('payCashBtn').addEventListener('click', ()=>{
+  payMethod='cash';
+  $('payCashBtn').classList.add('sel'); $('payUpiBtn').classList.remove('sel');
+  $('qrBox').classList.remove('show');
+});
+$('payUpiBtn').addEventListener('click', ()=>{
+  payMethod='upi';
+  $('payUpiBtn').classList.add('sel'); $('payCashBtn').classList.remove('sel');
+  if(!DB.settings.upiId){ toast('Add UPI ID in Settings → Shop/QR'); $('qrBox').classList.remove('show'); return; }
+  const amt = cartTotal().toFixed(2);
+  const upiUrl = `upi://pay?pa=${encodeURIComponent(DB.settings.upiId)}&pn=${encodeURIComponent(DB.settings.upiName||DB.settings.shopName)}&am=${amt}&cu=INR`;
+  $('qrImg').src = `https://api.qrserver.com/v1/create-qr-code/?size=250x250&data=${encodeURIComponent(upiUrl)}`;
+  $('qrAmt').textContent = money(amt);
+  $('qrUpiId').textContent = 'Pay to: ' + DB.settings.upiId;
+  $('qrBox').classList.add('show');
+});
+$('confirmPayBtn').addEventListener('click', ()=>{
+  if(cart.length===0){ toast('Cart is empty'); return; }
+  const tx = {
+    id: Date.now(),
+    date: new Date().toISOString(),
+    items: cart.map(c=>({id:c.id,name:c.name,price:c.price,qty:c.qty})),
+    total: cartTotal(),
+    method: payMethod
+  };
+  DB.tx.push(tx); save();
+  cart = [];
+  renderCartBar();
+  $('payModalBg').classList.remove('show');
+  toast('✔ Payment recorded');
+});
+
+/* ---------------- PIN LOCK ---------------- */
+/* PINs are never stored in plain text — only a SHA-256 hash is saved,
+   and repeated wrong attempts trigger a temporary lockout. */
+async function sha256Hex(str){
+  const buf = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(str));
+  return Array.from(new Uint8Array(buf)).map(b=>b.toString(16).padStart(2,'0')).join('');
+}
+function looksHashed(v){ return typeof v === 'string' && /^[0-9a-f]{64}$/.test(v); }
+async function migratePinIfNeeded(){
+  if(!looksHashed(DB.settings.pin)){
+    DB.settings.pin = await sha256Hex(DB.settings.pin || '1234');
+    save();
+  }
+}
+migratePinIfNeeded();
+
+const MAX_PIN_ATTEMPTS = 5;
+const LOCKOUT_SECONDS = 30;
+let failedPinAttempts = 0;
+let lockoutUntil = 0;
+let lockoutTimer = null;
+function resetLockoutDisplay(){
+  failedPinAttempts = 0;
+  if(Date.now() < lockoutUntil){ startLockoutCountdown(); } else { $('pinKeypad').style.opacity=''; }
+}
+function startLockoutCountdown(){
+  clearInterval(lockoutTimer);
+  const pad = $('pinKeypad');
+  pad.style.opacity = '.4';
+  lockoutTimer = setInterval(()=>{
+    const remain = Math.ceil((lockoutUntil - Date.now())/1000);
+    if(remain <= 0){
+      clearInterval(lockoutTimer);
+      pad.style.opacity = '';
+      failedPinAttempts = 0;
+      toast('You can try the PIN again now');
+    } else {
+      $('pinDisplay').textContent = `🔒 Try again in ${remain}s`;
+    }
+  }, 500);
+}
+
+let pinBuffer = '';
+function renderPinKeypad(){
+  const pad = $('pinKeypad');
+  pad.innerHTML='';
+  const keys = ['1','2','3','4','5','6','7','8','9','C','0','OK'];
+  keys.forEach(k=>{
+    const b = document.createElement('button');
+    b.textContent = k;
+    if(k==='C' || k==='OK') b.classList.add('wide');
+    b.addEventListener('click', ()=>{
+      if(k==='C'){ pinBuffer=''; }
+      else if(k==='OK'){ tryUnlock(); return; }
+      else if(pinBuffer.length<6){ pinBuffer += k; }
+      renderPinDisplay();
+    });
+    pad.appendChild(b);
+  });
+}
+function renderPinDisplay(){ $('pinDisplay').textContent = '•'.repeat(pinBuffer.length) || ' '; }
+async function tryUnlock(){
+  if(Date.now() < lockoutUntil){
+    toast('Too many attempts — please wait');
+    pinBuffer=''; renderPinDisplay();
+    return;
+  }
+  if(pinBuffer.length < 4){ toast('Enter your PIN'); return; }
+  const hash = await sha256Hex(pinBuffer);
+  if(hash === DB.settings.pin){
+    unlocked = true;
+    failedPinAttempts = 0;
+    $('lockPane').style.display='none';
+    $('adminPane').style.display='block';
+    renderAdmin();
+  } else {
+    failedPinAttempts++;
+    const left = MAX_PIN_ATTEMPTS - failedPinAttempts;
+    if(left <= 0){
+      lockoutUntil = Date.now() + LOCKOUT_SECONDS*1000;
+      startLockoutCountdown();
+      toast(`Too many wrong attempts. Locked for ${LOCKOUT_SECONDS}s`);
+    } else {
+      toast(`Wrong PIN — ${left} attempt${left===1?'':'s'} left`);
+    }
+  }
+  pinBuffer=''; renderPinDisplay();
+}
+renderPinKeypad();
+
+$('lockNowBtn').addEventListener('click', ()=>{
+  unlocked=false; pinBuffer=''; renderPinDisplay();
+  $('adminPane').style.display='none'; $('lockPane').style.display='block';
+});
+
+/* ---------------- SETTINGS TABS ---------------- */
+document.querySelectorAll('.settings-tabs button').forEach(b=>{
+  b.addEventListener('click', ()=>{
+    document.querySelectorAll('.settings-tabs button').forEach(x=>x.classList.remove('active'));
+    b.classList.add('active');
+    document.querySelectorAll('.admintab').forEach(t=>t.style.display='none');
+    $('tab-'+b.dataset.tab).style.display='block';
+    if(b.dataset.tab==='reports') renderReports();
+    if(b.dataset.tab==='shop') loadShopForm();
+    if(b.dataset.tab==='account') renderAccountTab();
+  });
+});
+function renderAdmin(){
+  renderItemsList();
+  loadShopForm();
+  if(!$('reportMonth').value){
+    const d = new Date();
+    $('reportMonth').value = d.toISOString().slice(0,7);
+  }
+}
+
+/* ---------------- ITEMS ADMIN ---------------- */
+let pendingPhoto = null;
+$('itPhoto').addEventListener('change', (e)=>{
+  const file = e.target.files[0];
+  if(!file) return;
+  const reader = new FileReader();
+  reader.onload = ev=>{
+    const img = new Image();
+    img.onload = ()=>{
+      const maxW = 220;
+      const scale = Math.min(1, maxW/img.width);
+      const w = Math.round(img.width*scale), h = Math.round(img.height*scale);
+      const canvas = document.createElement('canvas');
+      canvas.width=w; canvas.height=h;
+      canvas.getContext('2d').drawImage(img,0,0,w,h);
+      pendingPhoto = canvas.toDataURL('image/jpeg',0.65);
+      $('itPreview').src = pendingPhoto;
+      $('itPreview').style.display='block';
+    };
+    img.src = ev.target.result;
+  };
+  reader.readAsDataURL(file);
+});
+$('saveItemBtn').addEventListener('click', ()=>{
+  const name = $('itName').value.trim();
+  const price = parseFloat($('itPrice').value);
+  if(!name || isNaN(price)){ toast('Enter name and price'); return; }
+  const editId = $('editItemId').value;
+  if(editId){
+    const it = DB.items.find(x=>x.id==editId);
+    it.name=name; it.price=price; if(pendingPhoto) it.photo=pendingPhoto;
+  } else {
+    DB.items.push({ id: Date.now(), name, price, photo: pendingPhoto||'' });
+  }
+  save(); resetItemForm(); renderItemsList(); renderGrid();
+  toast('✔ Item saved');
+});
+$('cancelEditBtn').addEventListener('click', resetItemForm);
+function resetItemForm(){
+  $('editItemId').value=''; $('itName').value=''; $('itPrice').value='';
+  $('itPhoto').value=''; pendingPhoto=null;
+  $('itPreview').style.display='none'; $('itPreview').src='';
+  $('cancelEditBtn').style.display='none';
+  $('saveItemBtn').textContent='✔ Save Item';
+}
+function renderItemsList(){
+  const wrap = $('itemsList');
+  wrap.innerHTML='';
+  if(DB.items.length===0){ wrap.innerHTML = '<div class="empty-note">No items added yet.</div>'; return; }
+  DB.items.forEach(it=>{
+    const row = document.createElement('div');
+    row.className='row-card';
+    row.innerHTML = (it.photo?`<img src="${it.photo}">`:`<div class="ph2">🛒</div>`) +
+      `<div class="meta"><div class="n">${escapeHtml(it.name)}</div><div class="p">${money(it.price)}</div></div>
+      <button class="iconbtn" data-act="edit">✏️</button>
+      <button class="iconbtn" data-act="del">🗑️</button>`;
+    row.querySelector('[data-act=edit]').onclick = ()=>{
+      $('editItemId').value=it.id; $('itName').value=it.name; $('itPrice').value=it.price;
+      pendingPhoto=null;
+      if(it.photo){ $('itPreview').src=it.photo; $('itPreview').style.display='block'; }
+      $('cancelEditBtn').style.display='block';
+      $('saveItemBtn').textContent='✔ Update Item';
+      window.scrollTo(0,0);
+    };
+    row.querySelector('[data-act=del]').onclick = ()=>{
+      if(confirm('Delete "'+it.name+'"?')){
+        DB.items = DB.items.filter(x=>x.id!==it.id); save(); renderItemsList(); renderGrid();
+      }
+    };
+    wrap.appendChild(row);
+  });
+}
+
+/* ---------------- REPORTS ---------------- */
+$('reportMonth').addEventListener('change', renderReports);
+function renderReports(){
+  const month = $('reportMonth').value;
+  if(!month) return;
+  const filtered = DB.tx.filter(t=>t.date.slice(0,7)===month).sort((a,b)=>b.date.localeCompare(a.date));
+  const cash = filtered.filter(t=>t.method==='cash').reduce((s,t)=>s+t.total,0);
+  const upi = filtered.filter(t=>t.method==='upi').reduce((s,t)=>s+t.total,0);
+  $('reportTotals').innerHTML = `
+    <div class="tline"><span>💵 Cash received</span><span>${money(cash)}</span></div>
+    <div class="tline"><span>📱 UPI received</span><span>${money(upi)}</span></div>
+    <div class="tline"><span>🧾 Number of bills</span><span>${filtered.length}</span></div>
+    <div class="tline grand"><span>Total Income</span><span>${money(cash+upi)}</span></div>`;
+  const list = $('txList');
+  list.innerHTML='';
+  if(filtered.length===0){ list.innerHTML='<div class="empty-note">No sales recorded this month.</div>'; return; }
+  filtered.forEach(t=>{
+    const row = document.createElement('div');
+    row.className='row-card';
+    const itemsStr = t.items.map(i=>i.name+' x'+i.qty).join(', ');
+    const d = new Date(t.date);
+    row.innerHTML = `<div class="ph2">${t.method==='cash'?'💵':'📱'}</div>
+      <div class="meta"><div class="n">${money(t.total)} — ${t.method.toUpperCase()}</div>
+      <div class="p" style="color:#666;font-weight:500;">${escapeHtml(itemsStr)}</div>
+      <div class="p" style="color:#999;font-weight:500;font-size:12px;">${d.toLocaleDateString()} ${d.toLocaleTimeString()}</div></div>
+      <button class="iconbtn" data-act="del">🗑️</button>`;
+    row.querySelector('[data-act=del]').onclick = ()=>{
+      if(confirm('Delete this sale record?')){
+        DB.tx = DB.tx.filter(x=>x.id!==t.id); save(); renderReports();
+      }
+    };
+    list.appendChild(row);
+  });
+}
+$('exportBtn').addEventListener('click', ()=>{
+  const month = $('reportMonth').value;
+  const filtered = DB.tx.filter(t=>t.date.slice(0,7)===month);
+  let csv = 'Date,Items,Quantity,Total,Payment Method\n';
+  filtered.forEach(t=>{
+    const itemsStr = t.items.map(i=>i.name+' x'+i.qty).join('; ');
+    const d = new Date(t.date);
+    const qty = t.items.reduce((a,i)=>a+i.qty,0);
+    csv += `${d.toLocaleDateString()},"${itemsStr}",${qty},${t.total},${t.method.toUpperCase()}\n`;
+  });
+  const cash = filtered.filter(t=>t.method==='cash').reduce((s,t)=>s+t.total,0);
+  const upi = filtered.filter(t=>t.method==='upi').reduce((s,t)=>s+t.total,0);
+  csv += `\nTotal Cash,,,${cash.toFixed(2)},\nTotal UPI,,,${upi.toFixed(2)},\nGrand Total,,,${(cash+upi).toFixed(2)},\n`;
+  const blob = new Blob([csv], {type:'text/csv'});
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = `namma-kadai-${month}.csv`;
+  document.body.appendChild(a); a.click(); a.remove();
+  toast('Downloaded — open with Excel');
+});
+
+/* ---------------- SHOP / QR SETTINGS ---------------- */
+function loadShopForm(){
+  $('cfgShopName').value = DB.settings.shopName||'';
+  $('cfgUpiId').value = DB.settings.upiId||'';
+  $('cfgUpiName').value = DB.settings.upiName||'';
+  loadShopLogoPreview();
+}
+$('saveShopBtn').addEventListener('click', ()=>{
+  DB.settings.shopName = $('cfgShopName').value.trim() || 'My Shop';
+  DB.settings.upiId = $('cfgUpiId').value.trim();
+  DB.settings.upiName = $('cfgUpiName').value.trim();
+  save(); renderTitle();
+  toast('✔ Shop details saved');
+});
+
+/* ---------------- CHANGE PIN ---------------- */
+$('changePinBtn').addEventListener('click', async ()=>{
+  const oldP = $('oldPin').value, newP = $('newPin').value, confP = $('confirmPin').value;
+  const oldHash = await sha256Hex(oldP);
+  if(oldHash !== DB.settings.pin){ toast('Current PIN is wrong'); return; }
+  if(!/^\d{4,6}$/.test(newP)){ toast('New PIN must be 4-6 digits'); return; }
+  if(newP !== confP){ toast('New PIN does not match'); return; }
+  if(newP === oldP){ toast('New PIN must be different from current PIN'); return; }
+  DB.settings.pin = await sha256Hex(newP); save();
+  $('oldPin').value=''; $('newPin').value=''; $('confirmPin').value='';
+  toast('✔ PIN updated');
+});
+
+/* ---------------- TERMS MODAL ---------------- */
+function openTerms(){ $('termsModalBg').classList.add('show'); }
+function closeTerms(){ $('termsModalBg').classList.remove('show'); }
+$('closeTermsBtn').addEventListener('click', closeTerms);
+$('openTermsLink').addEventListener('click', e=>{ e.preventDefault(); openTerms(); });
+$('viewTermsBtn').addEventListener('click', openTerms);
+
+/* ---------------- LOGIN / SIGN UP / ACCOUNT ---------------- */
+function isAuthed(){ return !!currentUser; }
+function showAuthGate(show){ $('authGate').style.display = show ? 'flex' : 'none'; }
+
+(function restoreSession(){
+  try{
+    const saved = JSON.parse(localStorage.getItem('nk_session')||'null');
+    if(saved) currentUser = saved;
+  }catch(e){}
+})();
+
+$('cloudBadge').textContent = CLOUD_ENABLED
+  ? '☁️ Cloud sync is set up for this app'
+  : '📴 Cloud sync isn\'t set up yet — accounts stay on this device only';
+
+document.querySelectorAll('.authTabBtn').forEach(b=>{
+  b.addEventListener('click', ()=>{
+    document.querySelectorAll('.authTabBtn').forEach(x=>x.classList.remove('active'));
+    b.classList.add('active');
+    $('authTab-login').style.display = b.dataset.tab==='login' ? 'block':'none';
+    $('authTab-signup').style.display = b.dataset.tab==='signup' ? 'block':'none';
+  });
+});
+
+$('guestBtn').addEventListener('click', ()=>{
+  currentUser = { email:null, uid:null, mode:'guest' };
+  localStorage.setItem('nk_session', JSON.stringify(currentUser));
+  afterAuth();
+});
+
+$('loginBtn').addEventListener('click', doLogin);
+$('signupBtn').addEventListener('click', doSignup);
+
+async function doLogin(){
+  const email = $('loginEmail').value.trim().toLowerCase();
+  const pw = $('loginPassword').value;
+  if(!email || !pw){ toast('Enter email and password'); return; }
+  if(CLOUD_ENABLED){
+    try{
+      const cred = await fbAuth.signInWithEmailAndPassword(email, pw);
+      currentUser = { email, uid:cred.user.uid, mode:'cloud' };
+      localStorage.setItem('nk_session', JSON.stringify(currentUser));
+      await pullFromCloud();
+      afterAuth();
+    }catch(err){ toast((err.message||'Login failed').replace('Firebase: ','')); }
+  } else {
+    const users = JSON.parse(localStorage.getItem('nk_local_users')||'{}');
+    const hash = await sha256Hex(pw);
+    if(!users[email] || users[email] !== hash){ toast('Wrong email or password'); return; }
+    currentUser = { email, uid:null, mode:'local' };
+    localStorage.setItem('nk_session', JSON.stringify(currentUser));
+    afterAuth();
+  }
+}
+
+async function doSignup(){
+  const email = $('signupEmail').value.trim().toLowerCase();
+  const pw = $('signupPassword').value;
+  if(!$('agreeTerms').checked){ toast('Please accept the Terms & Conditions'); return; }
+  if(!email || pw.length<6){ toast('Enter a valid email and a password (6+ characters)'); return; }
+  if(CLOUD_ENABLED){
+    try{
+      const cred = await fbAuth.createUserWithEmailAndPassword(email, pw);
+      currentUser = { email, uid:cred.user.uid, mode:'cloud' };
+      localStorage.setItem('nk_session', JSON.stringify(currentUser));
+      pushToCloud();
+      afterAuth();
+    }catch(err){ toast((err.message||'Sign up failed').replace('Firebase: ','')); }
+  } else {
+    const users = JSON.parse(localStorage.getItem('nk_local_users')||'{}');
+    if(users[email]){ toast('Account already exists — log in instead'); return; }
+    users[email] = await sha256Hex(pw);
+    localStorage.setItem('nk_local_users', JSON.stringify(users));
+    currentUser = { email, uid:null, mode:'local' };
+    localStorage.setItem('nk_session', JSON.stringify(currentUser));
+    toast('✔ Account created (stored on this device)');
+    afterAuth();
+  }
+}
+
+async function pullFromCloud(){
+  if(!CLOUD_ENABLED || !currentUser || currentUser.mode!=='cloud') return;
+  try{
+    const doc = await fbDB.collection('shops').doc(currentUser.uid).get();
+    if(doc.exists){
+      const d = doc.data();
+      if(d.items) DB.items = d.items;
+      if(d.tx) DB.tx = d.tx;
+      if(d.settings) DB.settings = Object.assign({}, DEFAULTS, d.settings, { pin: DB.settings.pin });
+      saveLocalOnly();
+    }
+  }catch(err){ console.error('Cloud pull failed', err); }
+}
+
+function afterAuth(){
+  showAuthGate(false);
+  renderTitle(); renderGrid(); renderCartBar(); renderAccountTab();
+}
+
+function signOutUser(){
+  if(CLOUD_ENABLED && fbAuth.currentUser) fbAuth.signOut();
+  currentUser = null;
+  localStorage.removeItem('nk_session');
+  showAuthGate(true);
+}
+$('signOutBtn').addEventListener('click', ()=>{
+  if(confirm('Sign out of this account?')) signOutUser();
+});
+
+$('deleteDataBtn').addEventListener('click', async ()=>{
+  if(!confirm('This permanently deletes all items, sales and shop settings. Continue?')) return;
+  DB = { items:[], tx:[], settings: Object.assign({}, DEFAULTS) };
+  saveLocalOnly();
+  if(CLOUD_ENABLED && currentUser && currentUser.mode==='cloud'){
+    try{ await fbDB.collection('shops').doc(currentUser.uid).delete(); }catch(e){}
+  }
+  toast('✔ Your data has been deleted');
+  signOutUser();
+});
+
+function renderAccountTab(){
+  if(!$('acctInfoBox')) return;
+  const modeLabel = !currentUser ? '' :
+    currentUser.mode==='cloud' ? '☁️ Cloud account — synced' :
+    currentUser.mode==='local' ? '📱 Local account — this device only' :
+    '👤 Guest — this device only';
+  $('acctInfoBox').innerHTML = `
+    <div class="tline"><span>Signed in as</span><span>${escapeHtml(currentUser && currentUser.email ? currentUser.email : 'Guest')}</span></div>
+    <div class="tline"><span>Sync status</span><span>${modeLabel}</span></div>`;
+}
+
+/* ---------------- INIT ---------------- */
+document.addEventListener('visibilitychange', ()=>{
+  if(document.hidden && unlocked){
+    unlocked = false;
+    if($('settings').classList.contains('active')){
+      $('adminPane').style.display='none'; $('lockPane').style.display='block';
+      pinBuffer=''; renderPinDisplay(); resetLockoutDisplay();
+    }
+  }
+});
+renderTitle();
+renderGrid();
+renderCartBar();
+showAuthGate(!isAuthed());
+if(isAuthed()){
+  renderAccountTab();
+  pullFromCloud().then(()=>{ renderTitle(); renderGrid(); renderCartBar(); });
+}
+</script>
+</body>
+</html>
